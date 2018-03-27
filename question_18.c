@@ -8,6 +8,7 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include "myprocess.h"
 
 /*
@@ -29,10 +30,12 @@ void print_order(int *order, process *p_list, char *names, int n) {
 }
 
 int main() {
-	int N = 10;
-	process students[N];
-	int order[N];
-	char names[N];
+	int N;
+	printf("Number of students: ");
+	scanf("%d", &N);
+	process *students = (process *)malloc(N*sizeof(process));
+	int *order = (int *)malloc(N*sizeof(int));
+	char *names = (char *)malloc(N*sizeof(char));
 	int i;
 
 	// get input:
@@ -42,7 +45,7 @@ int main() {
 		scanf("%d", &students[i].burst_time);
 		printf("\tArrival time: ");
 		scanf("%d", &students[i].arrival_time);
-		//printf("%d", students[i].arrival_time);
+		printf("%d", students[i].arrival_time);
 
 		students[i].id = i+1;
 		students[i].executed = 0;
@@ -53,6 +56,8 @@ int main() {
 	schedule(students, N, sort_asc, order);
     printf("\nThe billing order will be as follows:\n");
 	print_order(order, students, names, N);
-
+	free(students);
+	free(order);
+	free(names);
 	return 0;
 }

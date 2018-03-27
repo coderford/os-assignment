@@ -10,6 +10,7 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include "myprocess.h"
 
 void print_order(int *order, process *p_list, int n) {
@@ -28,8 +29,8 @@ int main() {
 	printf("Number of processes: ");
 	scanf("%d", &p_count);
 
-	process p_list[p_count];
-	int order[p_count];
+	process *p_list = (process *)malloc(p_count*sizeof(process));
+	int *order = (int *)malloc(p_count*sizeof(int));
 
 	int i;
 	for(i = 0; i<p_count; i++) {
@@ -80,4 +81,8 @@ int main() {
 	printf(" - Total turn-around time: %.2f\n", total_tat);
 	printf(" - Average waiting time: %.2f\n", (float)(total_wt)/p_count);
 	printf(" - Average turn-around time: %.2f\n", (float)(total_tat)/p_count);
+
+	free(p_list);
+	free(order);
+	return 0;
 }

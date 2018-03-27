@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include "myprocess.h"
 
 int completion_time(process *p) {
@@ -38,7 +39,7 @@ void schedule(process *p_list, int n,
 		void (*sort)(process **, int), 
 		int *order
 	) {
-	process *ready_queue[n];	
+	process **ready_queue = (process **)malloc(n*sizeof(process*));	
 	int ready_n;
 	int clock = 0;					
 	int finished = 0;				// no. of processes done executing
@@ -72,4 +73,5 @@ void schedule(process *p_list, int n,
 
 		clock++;
 	}
+	free(ready_queue);
 }
