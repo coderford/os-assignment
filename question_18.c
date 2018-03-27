@@ -45,7 +45,6 @@ int main() {
 		scanf("%d", &students[i].burst_time);
 		printf("\tArrival time: ");
 		scanf("%d", &students[i].arrival_time);
-		printf("%d", students[i].arrival_time);
 
 		students[i].id = i+1;
 		students[i].executed = 0;
