@@ -25,7 +25,7 @@ int completion_time(process *p) {
 
 void sort_asc(process **arr, int n) {
 	// bubble sorting the processes according to burst time:
-	// ascending order
+	// ascending order for LJF
 	int i, j;
 	for(i = 0; i<n-1; i++) {
 		for(j = 0; j<n-i-1; j++) {
@@ -39,7 +39,7 @@ void sort_asc(process **arr, int n) {
 }
 void sort_desc(process **arr, int n) {
 	// bubble sorting the processes according to burst time:
-	// descending order
+	// descending order for SJF
 	int i, j;
 	for(i = 0; i<n-1; i++) {
 		for(j = 0; j<n-i-1; j++) {
@@ -52,7 +52,10 @@ void sort_desc(process **arr, int n) {
 	}
 }
 
-void schedule(process *p_list, int n, void (*sort)(process **, int)) {
+void schedule(process *p_list, int n, 
+		void (*sort)(process **, int), 
+		int *order
+	) {
 	process *ready_queue[n];	
 	int ready_n;
 	int clock = 0;					
@@ -75,12 +78,7 @@ void schedule(process *p_list, int n, void (*sort)(process **, int)) {
 			sort(ready_queue, ready_n);
 			ready_queue[ready_n-1]->executed = 1;
 			current = ready_queue[ready_n-1];
-
-			printf("\tpid %d executed\n", ready_queue[ready_n-1]->id);
-			printf("\t\twaiting time: %d, completion time: %d\n", 
-			 ready_queue[ready_n-1]->wait_time, 
-			 completion_time(ready_queue[ready_n-1])
-			);
+			order[finished] = ready_queue[ready_n-1]->id;
 
 			ready_n--;
 			finished++;
@@ -94,12 +92,24 @@ void schedule(process *p_list, int n, void (*sort)(process **, int)) {
 	}
 }
 
+void print_order(int *order, process *p_list, int n) {
+	int i;
+	for(i = 0; i<n; i++) {
+		printf("\tpid %d executed\n",order[i]);
+		printf("\t\twaiting time: %d, completion time: %d\n", 
+		 p_list[order[i]-1].wait_time, 
+		 completion_time(&p_list[order[i]-1])
+		);
+	}
+}
+
 int main() {
 	int p_count;
 	printf("Number of processes: ");
 	scanf("%d", &p_count);
 
 	process p_list[p_count];
+	int order[p_count];
 
 	int i;
 	for(i = 0; i<p_count; i++) {
@@ -117,7 +127,8 @@ int main() {
 								p_list[i].burst_time);
 	}
 	printf("\nScheduling the processes with LJF:\n");
-	schedule(p_list, p_count, sort_asc);
+	schedule(p_list, p_count, sort_asc, order);
+	print_order(order, p_list, p_count);
 
 	float total_wt = 0;
 	float total_tat = 0;
@@ -136,7 +147,8 @@ int main() {
 	}
 
 	printf("\nScheduling the processes with SJF:\n");
-	schedule(p_list, p_count, sort_desc);
+	schedule(p_list, p_count, sort_desc, order);
+	print_order(order, p_list, p_count);
 
 	total_wt = 0;
 	total_tat = 0;
