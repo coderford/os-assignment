@@ -25,10 +25,25 @@ int completion_time(process *p) {
 
 void sort_asc(process **arr, int n) {
 	// bubble sorting the processes according to burst time:
+	// ascending order
 	int i, j;
 	for(i = 0; i<n-1; i++) {
 		for(j = 0; j<n-i-1; j++) {
 			if(arr[j]->burst_time > arr[j+1]->burst_time) {
+				process *temp = arr[j];
+				arr[j] = arr[j+1];
+				arr[j+1] = temp;
+			}
+		}
+	}
+}
+void sort_desc(process **arr, int n) {
+	// bubble sorting the processes according to burst time:
+	// descending order
+	int i, j;
+	for(i = 0; i<n-1; i++) {
+		for(j = 0; j<n-i-1; j++) {
+			if(arr[j]->burst_time < arr[j+1]->burst_time) {
 				process *temp = arr[j];
 				arr[j] = arr[j+1];
 				arr[j+1] = temp;
@@ -55,14 +70,22 @@ void schedule(process *p_list, int n, void (*sort)(process **, int)) {
 		if(current != NULL && completion_time(current) == clock) {
 			current = NULL;
 		}
+
 		if(ready_n > 0 && current == NULL) {
 			sort(ready_queue, ready_n);
 			ready_queue[ready_n-1]->executed = 1;
 			current = ready_queue[ready_n-1];
+
 			printf("\tpid %d executed\n", ready_queue[ready_n-1]->id);
+			printf("\t\twaiting time: %d, completion time: %d\n", 
+			 ready_queue[ready_n-1]->wait_time, 
+			 completion_time(ready_queue[ready_n-1])
+			);
+
 			ready_n--;
 			finished++;
 		}
+
 		for(i = 0; i<ready_n; i++) {
 			ready_queue[i]->wait_time++;
 		}
@@ -93,6 +116,36 @@ int main() {
 		printf("%d\t%d\t%d\n", p_list[i].id, p_list[i].arrival_time,
 								p_list[i].burst_time);
 	}
-	printf("\nNow scheduling the processes (LJF):\n");
+	printf("\nScheduling the processes with LJF:\n");
 	schedule(p_list, p_count, sort_asc);
+
+	float total_wt = 0;
+	float total_tat = 0;
+	for(i = 0; i<p_count; i++) {
+		total_wt += p_list[i].wait_time;
+		total_tat += completion_time(&p_list[i]) - p_list[i].arrival_time;
+	}
+	printf("\n - Total waiting time: %.2f\n", total_wt);
+	printf(" - Total turn-around time: %.2f\n", total_tat);
+	printf(" - Average waiting time: %.2f\n",total_wt/p_count);
+	printf(" - Average turn-around time: %.2f\n", total_tat/p_count);
+
+	for(i = 0; i<p_count; i++) {
+		p_list[i].wait_time = 0;
+		p_list[i].executed = 0;
+	}
+
+	printf("\nScheduling the processes with SJF:\n");
+	schedule(p_list, p_count, sort_desc);
+
+	total_wt = 0;
+	total_tat = 0;
+	for(i = 0; i<p_count; i++) {
+		total_wt += p_list[i].wait_time;
+		total_tat += completion_time(&p_list[i]) - p_list[i].arrival_time;
+	}
+	printf("\n - Total waiting time: %.2f\n", total_wt);
+	printf(" - Total turn-around time: %.2f\n", total_tat);
+	printf(" - Average waiting time: %.2f\n", (float)(total_wt)/p_count);
+	printf(" - Average turn-around time: %.2f\n", (float)(total_tat)/p_count);
 }
