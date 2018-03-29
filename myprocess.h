@@ -11,8 +11,8 @@ typedef struct {
 } process;
 
 int completion_time(process *);
-void sort_asc(process **, int);
-void sort_desc(process **, int);
-void schedule(process *, int, void (*)(process **, int), int *);
+void swap_min(process **, int);
+void swap_max(process **, int);
+void schedule(process *, int, int, int *);
 
 #endif

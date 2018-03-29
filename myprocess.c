@@ -1,44 +1,43 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <limits.h>
 #include "myprocess.h"
 
 int completion_time(process *p) {
 	return p->arrival_time + p->wait_time + p->burst_time;
 }
 
-void sort_asc(process **arr, int n) {
-	// bubble sorting the processes according to burst time:
-	// ascending order for LJF
-	int i, j;
-	for(i = 0; i<n-1; i++) {
-		for(j = 0; j<n-i-1; j++) {
-			if(arr[j]->burst_time > arr[j+1]->burst_time) {
-				process *temp = arr[j];
-				arr[j] = arr[j+1];
-				arr[j+1] = temp;
-			}
+void swap_max(process *ready_queue[], int n) {
+	int max_bt = 0;
+	int max_index = 0;
+	int i;
+	for(i = 0; i<n; i++) {
+		if(ready_queue[i]->burst_time > max_bt) {
+			max_bt = ready_queue[i]->burst_time;
+			max_index = i;
 		}
 	}
-}
-void sort_desc(process **arr, int n) {
-	// bubble sorting the processes according to burst time:
-	// descending order for SJF
-	int i, j;
-	for(i = 0; i<n-1; i++) {
-		for(j = 0; j<n-i-1; j++) {
-			if(arr[j]->burst_time < arr[j+1]->burst_time) {
-				process *temp = arr[j];
-				arr[j] = arr[j+1];
-				arr[j+1] = temp;
-			}
-		}
-	}
+	process *temp = ready_queue[n-1];
+	ready_queue[n-1] = ready_queue[max_index];
+	ready_queue[max_index] = temp;
 }
 
-void schedule(process *p_list, int n, 
-		void (*sort)(process **, int), 
-		int *order
-	) {
+void swap_min(process *ready_queue[], int n) {
+	int min_bt = INT_MAX;
+	int min_index = 0; 
+	int i;
+	for(i = 0; i<n; i++) {
+		if(ready_queue[i]->burst_time < min_bt) {
+			min_bt = ready_queue[i]->burst_time;
+			min_index = i;
+		}
+	}
+	process *temp = ready_queue[n-1];
+	ready_queue[n-1] = ready_queue[min_index];
+	ready_queue[min_index] = temp;
+}
+
+void schedule(process *p_list, int n, int type, int *order) {
 	process **ready_queue = (process **)malloc(n*sizeof(process*));	
 	int ready_n;
 	int clock = 0;					
@@ -58,7 +57,12 @@ void schedule(process *p_list, int n,
 		}
 
 		if(ready_n > 0 && current == NULL) {
-			sort(ready_queue, ready_n);
+			if(type == 1) {
+				swap_max(ready_queue, ready_n);
+			}
+			else {
+				swap_min(ready_queue, ready_n);
+			}
 			ready_queue[ready_n-1]->executed = 1;
 			current = ready_queue[ready_n-1];
 			order[finished] = ready_queue[ready_n-1]->id;

@@ -48,7 +48,7 @@ int main() {
 								p_list[i].burst_time);
 	}
 	printf("\nScheduling the processes with LJF:\n");
-	schedule(p_list, p_count, sort_asc, order);
+	schedule(p_list, p_count, 1, order);
 	print_order(order, p_list, p_count);
 
 	float total_wt = 0;
@@ -68,7 +68,7 @@ int main() {
 	}
 
 	printf("\nScheduling the processes with SJF:\n");
-	schedule(p_list, p_count, sort_desc, order);
+	schedule(p_list, p_count, 0, order);
 	print_order(order, p_list, p_count);
 
 	total_wt = 0;

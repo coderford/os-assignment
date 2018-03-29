@@ -1,4 +1,4 @@
-CC=gcc
+CC=clang
 all: question_18 question_17
 question_18: question_18.o myprocess.o
 	$(CC) -o question_18 question_18.o myprocess.o

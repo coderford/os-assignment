@@ -52,7 +52,7 @@ int main() {
 	}
 
 
-	schedule(students, N, sort_asc, order);
+	schedule(students, N, 1, order);
     printf("\nThe billing order will be as follows:\n");
 	print_order(order, students, names, N);
 	free(students);
